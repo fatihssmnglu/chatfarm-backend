@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ChatFarm Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f6fa;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+        }
+
+        .cards {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            width: 260px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .wide-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            min-width: 380px;
+            flex: 1;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .value {
+            font-size: 32px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            color: white;
+            padding: 8px 14px;
+            border-radius: 999px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .chart-box, .table-box {
+            margin-top: 30px;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            width: 1000px;
+            max-width: 100%;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .decision-section {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+        }
+
+        .critical {
+            border-left: 6px solid #dc3545;
+        }
+
+        .warning {
+            border-left: 6px solid #f59f00;
+        }
+
+        .info {
+            border-left: 6px solid #0d6efd;
+        }
+
+        .success {
+            border-left: 6px solid #198754;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border-bottom: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background: #f1f3f5;
+        }
+
+        .muted {
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+
+<h1>🌱 ChatFarm Dashboard</h1>
+
+<div class="decision-section">
+
+    <div class="wide-card
+        {% if latest_alert %}
+            {% if latest_alert.severity == 'critical' %}critical
+            {% elif latest_alert.severity == 'warning' %}warning
+            {% else %}info
+            {% endif %}
+        {% endif %}
+    ">
+        <h2>🚨 Son Alarm</h2>
+
+        {% if latest_alert %}
+            <p><strong>Alarm Tipi:</strong> {{ latest_alert.alert_type }}</p>
+            <p><strong>Seviye:</strong> {{ latest_alert.severity }}</p>
+            <p><strong>Mesaj:</strong> {{ latest_alert.message }}</p>
+            <p><strong>Tarih:</strong> {{ latest_alert.created_at|date:"d.m.Y H:i:s" }}</p>
+        {% else %}
+            <p class="muted">Henüz alarm oluşmadı.</p>
+        {% endif %}
+    </div>
+
+    <div class="wide-card
+        {% if latest_recommendation %}
+            {% if latest_recommendation.score >= 60 %}critical
+            {% elif latest_recommendation.score >= 40 %}warning
+            {% else %}success
+            {% endif %}
+        {% endif %}
+    ">
+        <h2>💧 Sulama Önerisi</h2>
+
+        {% if latest_recommendation %}
+            <p><strong>Karar:</strong> {{ latest_recommendation.recommendation }}</p>
+            <p><strong>Skor:</strong> {{ latest_recommendation.score }}</p>
+            <p><strong>Su Miktarı:</strong> {{ latest_recommendation.water_amount_mm }} mm</p>
+            <p><strong>Neden:</strong> {{ latest_recommendation.reason }}</p>
+            <p><strong>Tarih:</strong> {{ latest_recommendation.created_at|date:"d.m.Y H:i:s" }}</p>
+        {% else %}
+            <p class="muted">Henüz sulama önerisi oluşmadı.</p>
+        {% endif %}
+    </div>
+
+</div>
+
+<div class="cards">
+
+    <div class="card">
+        <h3>Soil Moisture</h3>
+        <div class="value">
+            {% if latest_measurement %}{{ latest_measurement.soil_moisture }}{% else %}-{% endif %}
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Nem Durumu</h3>
+        <div class="status-badge" style="background-color: {{ moisture_color }};">
+            {{ moisture_status }}
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Light</h3>
+        <div class="value">
+            {% if latest_measurement %}{{ latest_measurement.light }}{% else %}-{% endif %}
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Işık Durumu</h3>
+        <div class="status-badge" style="background-color: {{ light_color }};">
+            {{ light_status }}
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Temperature</h3>
+        <div class="value">
+            {% if latest_measurement %}{{ latest_measurement.temperature }} °C{% else %}-{% endif %}
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Humidity</h3>
+        <div class="value">
+            {% if latest_measurement %}{{ latest_measurement.humidity }} %{% else %}-{% endif %}
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Water Temperature</h3>
+        <div class="value">
+            {% if latest_measurement %}{{ latest_measurement.water_temperature }} °C{% else %}-{% endif %}
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>MQ135</h3>
+        <div class="value">
+            {% if latest_measurement %}{{ latest_measurement.mq135 }}{% else %}-{% endif %}
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Cihaz Durumu</h3>
+        <div class="status-badge" style="background-color: {{ device_color }};">
+            {{ device_status }}
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Last Update</h3>
+        <div style="margin-top: 10px;">
+            {% if latest_measurement %}{{ latest_measurement.created_at|date:"d.m.Y H:i:s" }}{% else %}-{% endif %}
+        </div>
+    </div>
+
+</div>
+
+<div class="chart-box">
+    <h3>Sensör Grafiği</h3>
+    <canvas id="sensorChart"></canvas>
+</div>
+
+<div class="table-box">
+    <h3>Son 10 Ölçüm</h3>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Sıcaklık</th>
+            <th>Nem</th>
+            <th>Toprak Nem</th>
+            <th>Işık</th>
+            <th>Su Sıcaklığı</th>
+            <th>MQ135</th>
+            <th>Zaman</th>
+        </tr>
+
+        {% for measurement in last_10_measurements %}
+        <tr>
+            <td>{{ measurement.id }}</td>
+            <td>{{ measurement.temperature }}</td>
+            <td>{{ measurement.humidity }}</td>
+            <td>{{ measurement.soil_moisture }}</td>
+            <td>{{ measurement.light }}</td>
+            <td>{{ measurement.water_temperature }}</td>
+            <td>{{ measurement.mq135 }}</td>
+            <td>{{ measurement.created_at|date:"d.m.Y H:i:s" }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+
+{{ chart_labels|json_script:"chart-labels" }}
+{{ soil_chart_data|json_script:"soil-chart-data" }}
+{{ light_chart_data|json_script:"light-chart-data" }}
+{{ temperature_chart_data|json_script:"temperature-chart-data" }}
+{{ humidity_chart_data|json_script:"humidity-chart-data" }}
+{{ water_temp_chart_data|json_script:"water-temp-chart-data" }}
+{{ mq135_chart_data|json_script:"mq135-chart-data" }}
+
+<script>
+    const labels = JSON.parse(document.getElementById("chart-labels").textContent);
+    const soilData = JSON.parse(document.getElementById("soil-chart-data").textContent);
+    const lightData = JSON.parse(document.getElementById("light-chart-data").textContent);
+    const temperatureData = JSON.parse(document.getElementById("temperature-chart-data").textContent);
+    const humidityData = JSON.parse(document.getElementById("humidity-chart-data").textContent);
+    const waterTempData = JSON.parse(document.getElementById("water-temp-chart-data").textContent);
+    const mq135Data = JSON.parse(document.getElementById("mq135-chart-data").textContent);
+
+    const ctx = document.getElementById("sensorChart");
+
+    new Chart(ctx, {
+        type: "line",
+        data: {
+            labels: labels,
+            datasets: [
+                {
+                    label: "Soil Moisture",
+                    data: soilData,
+                    borderWidth: 2,
+                    tension: 0.3
+                },
+                {
+                    label: "Light",
+                    data: lightData,
+                    borderWidth: 2,
+                    tension: 0.3
+                },
+                {
+                    label: "Temperature",
+                    data: temperatureData,
+                    borderWidth: 2,
+                    tension: 0.3
+                },
+                {
+                    label: "Humidity",
+                    data: humidityData,
+                    borderWidth: 2,
+                    tension: 0.3
+                },
+                {
+                    label: "Water Temperature",
+                    data: waterTempData,
+                    borderWidth: 2,
+                    tension: 0.3
+                },
+                {
+                    label: "MQ135",
+                    data: mq135Data,
+                    borderWidth: 2,
+                    tension: 0.3
+                }
+            ]
+        }
+    });
+
+    setInterval(function () {
+        location.reload();
+    }, 5000);
+</script>
+
+</body>
+</html>

@@ -1,268 +1,693 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ChatFarm Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
+        :root {
+            --bg: #07111f;
+            --panel: rgba(10, 20, 38, 0.72);
+            --panel-strong: rgba(8, 16, 30, 0.88);
+            --stroke: rgba(255,255,255,0.10);
+            --muted: #9fb0c8;
+            --text: #edf4ff;
+            --green: #22c55e;
+            --cyan: #22d3ee;
+            --blue: #3b82f6;
+            --amber: #f59e0b;
+            --red: #ef4444;
+            --shadow: 0 20px 60px rgba(0,0,0,0.35);
+            --radius-xl: 28px;
+            --radius-lg: 22px;
+            --radius-md: 18px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f5f6fa;
             margin: 0;
-            padding: 20px;
+            min-height: 100vh;
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(circle at 10% 10%, rgba(34,211,238,0.18), transparent 28%),
+                radial-gradient(circle at 85% 15%, rgba(59,130,246,0.18), transparent 26%),
+                radial-gradient(circle at 50% 100%, rgba(34,197,94,0.12), transparent 24%),
+                linear-gradient(180deg, #07111f 0%, #091424 45%, #08101d 100%);
+            padding: 24px;
         }
 
-        h1 {
-            margin-bottom: 20px;
+        .page {
+            max-width: 1400px;
+            margin: 0 auto;
         }
 
-        .cards {
-            display: flex;
-            gap: 20px;
-            flex-wrap: wrap;
+        .hero {
+            position: relative;
+            overflow: hidden;
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 18px;
+            padding: 24px;
+            border: 1px solid var(--stroke);
+            border-radius: 32px;
+            background: linear-gradient(135deg, rgba(14,26,47,0.92), rgba(7,17,31,0.82));
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(20px);
+            margin-bottom: 24px;
         }
 
-        .card {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            width: 260px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        .hero::before {
+            content: "";
+            position: absolute;
+            inset: auto -100px -120px auto;
+            width: 320px;
+            height: 320px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(34,211,238,0.18), transparent 65%);
+            pointer-events: none;
         }
 
-        .wide-card {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            min-width: 380px;
-            flex: 1;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-        }
-
-        .value {
-            font-size: 32px;
-            font-weight: bold;
-            margin-top: 10px;
-        }
-
-        .status-badge {
-            display: inline-block;
-            color: white;
-            padding: 8px 14px;
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
             border-radius: 999px;
-            font-weight: bold;
-            margin-top: 10px;
+            background: rgba(255,255,255,0.06);
+            color: #b9c9df;
+            font-size: 12px;
+            border: 1px solid rgba(255,255,255,0.10);
+            margin-bottom: 14px;
         }
 
-        .chart-box, .table-box {
-            margin-top: 30px;
-            background: white;
+        .hero-title {
+            margin: 0;
+            font-size: clamp(28px, 4vw, 42px);
+            line-height: 1.05;
+            letter-spacing: -0.03em;
+        }
+
+        .hero-subtitle {
+            margin: 14px 0 0;
+            max-width: 760px;
+            color: var(--muted);
+            font-size: 15px;
+            line-height: 1.65;
+        }
+
+        .hero-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 22px;
+        }
+
+        .hero-stat {
+            padding: 16px;
+            border-radius: 18px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .hero-stat-label {
+            color: var(--muted);
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+
+        .hero-stat-value {
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .hero-side {
+            display: flex;
+            align-items: stretch;
+        }
+
+        .score-card {
+            width: 100%;
+            min-height: 240px;
             padding: 20px;
-            border-radius: 12px;
-            width: 1000px;
-            max-width: 100%;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border-radius: 24px;
+            background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+            border: 1px solid rgba(255,255,255,0.10);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .score-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .score-title {
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        .score-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 14px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 700;
+            border: 1px solid rgba(255,255,255,0.10);
+            background: rgba(255,255,255,0.06);
+            color: #eef6ff;
+        }
+
+        .score-ring-wrap {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 8px 0 4px;
+        }
+
+        .score-ring {
+            width: 170px;
+            height: 170px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background: conic-gradient(var(--green) 0deg 270deg, rgba(255,255,255,0.08) 270deg 360deg);
+            position: relative;
+            box-shadow: inset 0 0 28px rgba(0,0,0,0.25);
+        }
+
+        .score-ring::after {
+            content: "";
+            position: absolute;
+            inset: 14px;
+            border-radius: 50%;
+            background: #08111f;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .score-ring-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .score-number {
+            font-size: 34px;
+            font-weight: 800;
+            line-height: 1;
+        }
+
+        .score-caption {
+            margin-top: 6px;
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .score-description {
+            color: #dce8f7;
+            font-size: 14px;
+            line-height: 1.65;
+        }
+
+        .section {
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--stroke);
+            background: var(--panel);
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(18px);
         }
 
         .decision-section {
-            display: flex;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
             gap: 20px;
-            flex-wrap: wrap;
-            margin-bottom: 30px;
+            margin-bottom: 24px;
+        }
+
+        .wide-card {
+            padding: 22px;
+            border-radius: var(--radius-xl);
+            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.04);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+            min-height: 230px;
+        }
+
+        .wide-card h2 {
+            margin: 0 0 16px 0;
+            font-size: 20px;
+            letter-spacing: -0.02em;
+        }
+
+        .wide-card p,
+        .wide-card li {
+            color: #dce8f7;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .wide-card ul {
+            margin: 10px 0 0 18px;
+            padding: 0;
         }
 
         .critical {
-            border-left: 6px solid #dc3545;
+            border-left: 6px solid var(--red);
         }
 
         .warning {
-            border-left: 6px solid #f59f00;
+            border-left: 6px solid var(--amber);
         }
 
         .info {
-            border-left: 6px solid #0d6efd;
+            border-left: 6px solid var(--blue);
         }
 
         .success {
-            border-left: 6px solid #198754;
+            border-left: 6px solid var(--green);
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 18px;
+            margin-bottom: 24px;
+        }
+
+        .card {
+            background: rgba(255,255,255,0.04);
+            padding: 20px;
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.03);
+        }
+
+        .card h3 {
+            margin: 0;
+            font-size: 14px;
+            color: var(--muted);
+            font-weight: 600;
+        }
+
+        .value {
+            font-size: 30px;
+            font-weight: 800;
+            margin-top: 14px;
+            color: var(--text);
+            line-height: 1.15;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            padding: 8px 14px;
+            border-radius: 999px;
+            font-weight: 700;
+            margin-top: 14px;
+            font-size: 13px;
+            box-shadow: 0 10px 24px rgba(0,0,0,0.18);
+        }
+
+        .time-value {
+            margin-top: 14px;
+            color: #dce8f7;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+
+        .chart-box,
+        .table-box {
+            margin-top: 24px;
+            padding: 22px;
+            border-radius: var(--radius-xl);
+            width: 100%;
+        }
+
+        .chart-box h3,
+        .table-box h3 {
+            margin: 0 0 18px 0;
+            font-size: 20px;
+        }
+
+        .muted {
+            color: var(--muted);
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
+            overflow: hidden;
+            border-radius: 16px;
         }
 
         th, td {
-            border-bottom: 1px solid #ddd;
-            padding: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding: 14px 12px;
             text-align: left;
+            font-size: 14px;
         }
 
         th {
-            background: #f1f3f5;
+            background: rgba(255,255,255,0.05);
+            color: #cfe0f5;
+            font-weight: 700;
         }
 
-        .muted {
-            color: #666;
+        td {
+            color: #dce8f7;
+        }
+
+        tr:hover td {
+            background: rgba(255,255,255,0.03);
+        }
+
+        canvas {
+            max-height: 420px;
+        }
+
+        @media (max-width: 1200px) {
+            .decision-section {
+                grid-template-columns: 1fr;
+            }
+
+            .cards {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            .hero {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 14px;
+            }
+
+            .hero,
+            .section,
+            .wide-card,
+            .chart-box,
+            .table-box {
+                border-radius: 24px;
+            }
+
+            .hero-stats,
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            .value {
+                font-size: 26px;
+            }
+
+            table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
         }
     </style>
 </head>
 
 <body>
+<div class="page">
 
-<h1>🌱 ChatFarm Dashboard</h1>
+    <section class="hero">
+        <div>
+            <div class="eyebrow">🌿 ChatFarm izleme ve karar destek paneli</div>
+            <h1 class="hero-title">ChatFarm Dashboard</h1>
+            <p class="hero-subtitle">
+                Sensör verileri, alarm durumu, akıllı analiz ve sulama önerilerini tek ekranda daha okunabilir,
+                modern ve sunuma uygun bir yapıda takip et.
+            </p>
 
-<div class="decision-section">
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <div class="hero-stat-label">Çalışma Modu</div>
+                    <div class="hero-stat-value">Canlı İzleme</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-label">Karar Mekanizması</div>
+                    <div class="hero-stat-value">Rule + AI</div>
+                </div>
+                <div class="hero-stat">
+                    <div class="hero-stat-label">Odak</div>
+                    <div class="hero-stat-value">Risk ve Öneri</div>
+                </div>
+            </div>
+        </div>
 
-    <div class="wide-card
-        {% if latest_alert %}
-            {% if latest_alert.severity == 'critical' %}critical
-            {% elif latest_alert.severity == 'warning' %}warning
-            {% else %}info
+        <div class="hero-side">
+            <div class="score-card">
+                <div class="score-top">
+                    <div class="score-title">Sera Sağlık Skoru</div>
+                    <div
+                        id="heroStatusBadge"
+                        class="score-badge"
+                    >
+                        {% if ai_result and ai_result.status == 'warning' %}
+                            Dikkat
+                        {% else %}
+                            Stabil
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="score-ring-wrap">
+                    <div
+                        class="score-ring"
+                        style="
+                            {% if ai_result and ai_result.status == 'warning' %}
+                                background: conic-gradient(var(--amber) 0deg 210deg, rgba(255,255,255,0.08) 210deg 360deg);
+                            {% else %}
+                                background: conic-gradient(var(--green) 0deg 290deg, rgba(255,255,255,0.08) 290deg 360deg);
+                            {% endif %}
+                        "
+                    >
+                        <div class="score-ring-content">
+                            <div class="score-number">
+                                {% if ai_result and ai_result.status == 'warning' %}
+                                    58
+                                {% else %}
+                                    81
+                                {% endif %}
+                            </div>
+                            <div class="score-caption">/ 100</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="score-description">
+                    {% if ai_message %}
+                        {{ ai_message }}
+                    {% else %}
+                        Sistem genel olarak stabil görünüyor. Kritik bir uyarı oluşursa bu alanda özetlenecek.
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="decision-section">
+        <div class="wide-card
+            {% if latest_alert %}
+                {% if latest_alert.severity == 'critical' %}critical
+                {% elif latest_alert.severity == 'warning' %}warning
+                {% else %}info
+                {% endif %}
+            {% else %}
+                info
             {% endif %}
-        {% endif %}
-    ">
-        <h2>🚨 Son Alarm</h2>
+        ">
+            <h2>Son Alarm</h2>
 
-        {% if latest_alert %}
-            <p><strong>Alarm Tipi:</strong> {{ latest_alert.alert_type }}</p>
-            <p><strong>Seviye:</strong> {{ latest_alert.severity }}</p>
-            <p><strong>Mesaj:</strong> {{ latest_alert.message }}</p>
-            <p><strong>Tarih:</strong> {{ latest_alert.created_at|date:"d.m.Y H:i:s" }}</p>
-        {% else %}
-            <p class="muted">Henüz alarm oluşmadı.</p>
-        {% endif %}
-    </div>
-
-    <div class="wide-card
-        {% if latest_recommendation %}
-            {% if latest_recommendation.score >= 60 %}critical
-            {% elif latest_recommendation.score >= 40 %}warning
-            {% else %}success
+            {% if latest_alert %}
+                <p><strong>Alarm Tipi:</strong> {{ latest_alert.alert_type }}</p>
+                <p><strong>Seviye:</strong> {{ latest_alert.severity }}</p>
+                <p><strong>Mesaj:</strong> {{ latest_alert.message }}</p>
+                <p><strong>Tarih:</strong> {{ latest_alert.created_at|date:"d.m.Y H:i:s" }}</p>
+            {% else %}
+                <p class="muted">Henüz alarm oluşmadı.</p>
             {% endif %}
-        {% endif %}
-    ">
-        <h2>💧 Sulama Önerisi</h2>
+        </div>
 
-        {% if latest_recommendation %}
-            <p><strong>Karar:</strong> {{ latest_recommendation.recommendation }}</p>
-            <p><strong>Skor:</strong> {{ latest_recommendation.score }}</p>
-            <p><strong>Su Miktarı:</strong> {{ latest_recommendation.water_amount_mm }} mm</p>
-            <p><strong>Neden:</strong> {{ latest_recommendation.reason }}</p>
-            <p><strong>Tarih:</strong> {{ latest_recommendation.created_at|date:"d.m.Y H:i:s" }}</p>
-        {% else %}
-            <p class="muted">Henüz sulama önerisi oluşmadı.</p>
-        {% endif %}
-    </div>
+        <div class="wide-card
+            {% if ai_result %}
+                {% if ai_result.status == 'warning' %}warning
+                {% else %}success
+                {% endif %}
+            {% else %}
+                success
+            {% endif %}
+        ">
+            <h2>Akıllı Analiz</h2>
 
-</div>
+            <p><strong>Durum:</strong> {{ ai_message }}</p>
 
-<div class="cards">
+            {% if ai_effects %}
+                <p><strong>Tespitler:</strong></p>
+                <ul>
+                    {% for effect in ai_effects %}
+                        <li>{{ effect }}</li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="muted">Herhangi bir kritik durum tespit edilmedi.</p>
+            {% endif %}
 
-    <div class="card">
-        <h3>Soil Moisture</h3>
-        <div class="value">
-            {% if latest_measurement %}{{ latest_measurement.soil_moisture }}{% else %}-{% endif %}
+            {% if ai_actions %}
+                <p><strong>Öneriler:</strong></p>
+                <ul>
+                    {% for action in ai_actions %}
+                        <li>{{ action }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+
+        <div class="wide-card
+            {% if latest_recommendation %}
+                {% if latest_recommendation.score >= 60 %}critical
+                {% elif latest_recommendation.score >= 40 %}warning
+                {% else %}success
+                {% endif %}
+            {% else %}
+                success
+            {% endif %}
+        ">
+            <h2>Sulama Önerisi</h2>
+
+            {% if latest_recommendation %}
+                <p><strong>Karar:</strong> {{ latest_recommendation.recommendation }}</p>
+                <p><strong>Skor:</strong> {{ latest_recommendation.score }}</p>
+                <p><strong>Su Miktarı:</strong> {{ latest_recommendation.water_amount_mm }} mm</p>
+                <p><strong>Neden:</strong> {{ latest_recommendation.reason }}</p>
+                <p><strong>Tarih:</strong> {{ latest_recommendation.created_at|date:"d.m.Y H:i:s" }}</p>
+            {% else %}
+                <p class="muted">Henüz sulama önerisi oluşmadı.</p>
+            {% endif %}
         </div>
     </div>
 
-    <div class="card">
-        <h3>Nem Durumu</h3>
-        <div class="status-badge" style="background-color: {{ moisture_color }};">
-            {{ moisture_status }}
+    <div class="cards">
+        <div class="card">
+            <h3>Toprak Nemi</h3>
+            <div class="value">
+                {% if latest_measurement %}{{ latest_measurement.soil_moisture }}{% else %}-{% endif %}
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Nem Durumu</h3>
+            <div class="status-badge" style="background-color: {{ moisture_color }};">
+                {{ moisture_status }}
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Işık</h3>
+            <div class="value">
+                {% if latest_measurement %}{{ latest_measurement.light }}{% else %}-{% endif %}
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Işık Durumu</h3>
+            <div class="status-badge" style="background-color: {{ light_color }};">
+                {{ light_status }}
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Sıcaklık</h3>
+            <div class="value">
+                {% if latest_measurement %}{{ latest_measurement.temperature }} °C{% else %}-{% endif %}
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Nem</h3>
+            <div class="value">
+                {% if latest_measurement %}{{ latest_measurement.humidity }} %{% else %}-{% endif %}
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Su Sıcaklığı</h3>
+            <div class="value">
+                {% if latest_measurement %}{{ latest_measurement.water_temperature }} °C{% else %}-{% endif %}
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>MQ135</h3>
+            <div class="value">
+                {% if latest_measurement %}{{ latest_measurement.mq135 }}{% else %}-{% endif %}
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Cihaz Durumu</h3>
+            <div class="status-badge" style="background-color: {{ device_color }};">
+                {{ device_status }}
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Son Güncelleme</h3>
+            <div class="time-value">
+                {% if latest_measurement %}{{ latest_measurement.created_at|date:"d.m.Y H:i:s" }}{% else %}-{% endif %}
+            </div>
         </div>
     </div>
 
-    <div class="card">
-        <h3>Light</h3>
-        <div class="value">
-            {% if latest_measurement %}{{ latest_measurement.light }}{% else %}-{% endif %}
-        </div>
+    <div class="section chart-box">
+        <h3>📈 Sensör Grafiği</h3>
+        <canvas id="sensorChart"></canvas>
     </div>
 
-    <div class="card">
-        <h3>Işık Durumu</h3>
-        <div class="status-badge" style="background-color: {{ light_color }};">
-            {{ light_status }}
-        </div>
+    <div class="section table-box">
+        <h3>🧾 Son 10 Ölçüm</h3>
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Sıcaklık</th>
+                <th>Nem</th>
+                <th>Toprak Nem</th>
+                <th>Işık</th>
+                <th>Su Sıcaklığı</th>
+                <th>MQ135</th>
+                <th>Zaman</th>
+            </tr>
+
+            {% for measurement in last_10_measurements %}
+            <tr>
+                <td>{{ measurement.id }}</td>
+                <td>{{ measurement.temperature }}</td>
+                <td>{{ measurement.humidity }}</td>
+                <td>{{ measurement.soil_moisture }}</td>
+                <td>{{ measurement.light }}</td>
+                <td>{{ measurement.water_temperature }}</td>
+                <td>{{ measurement.mq135 }}</td>
+                <td>{{ measurement.created_at|date:"d.m.Y H:i:s" }}</td>
+            </tr>
+            {% endfor %}
+        </table>
     </div>
 
-    <div class="card">
-        <h3>Temperature</h3>
-        <div class="value">
-            {% if latest_measurement %}{{ latest_measurement.temperature }} °C{% else %}-{% endif %}
-        </div>
-    </div>
-
-    <div class="card">
-        <h3>Humidity</h3>
-        <div class="value">
-            {% if latest_measurement %}{{ latest_measurement.humidity }} %{% else %}-{% endif %}
-        </div>
-    </div>
-
-    <div class="card">
-        <h3>Water Temperature</h3>
-        <div class="value">
-            {% if latest_measurement %}{{ latest_measurement.water_temperature }} °C{% else %}-{% endif %}
-        </div>
-    </div>
-
-    <div class="card">
-        <h3>MQ135</h3>
-        <div class="value">
-            {% if latest_measurement %}{{ latest_measurement.mq135 }}{% else %}-{% endif %}
-        </div>
-    </div>
-
-    <div class="card">
-        <h3>Cihaz Durumu</h3>
-        <div class="status-badge" style="background-color: {{ device_color }};">
-            {{ device_status }}
-        </div>
-    </div>
-
-    <div class="card">
-        <h3>Last Update</h3>
-        <div style="margin-top: 10px;">
-            {% if latest_measurement %}{{ latest_measurement.created_at|date:"d.m.Y H:i:s" }}{% else %}-{% endif %}
-        </div>
-    </div>
-
-</div>
-
-<div class="chart-box">
-    <h3>Sensör Grafiği</h3>
-    <canvas id="sensorChart"></canvas>
-</div>
-
-<div class="table-box">
-    <h3>Son 10 Ölçüm</h3>
-    <table>
-        <tr>
-            <th>ID</th>
-            <th>Sıcaklık</th>
-            <th>Nem</th>
-            <th>Toprak Nem</th>
-            <th>Işık</th>
-            <th>Su Sıcaklığı</th>
-            <th>MQ135</th>
-            <th>Zaman</th>
-        </tr>
-
-        {% for measurement in last_10_measurements %}
-        <tr>
-            <td>{{ measurement.id }}</td>
-            <td>{{ measurement.temperature }}</td>
-            <td>{{ measurement.humidity }}</td>
-            <td>{{ measurement.soil_moisture }}</td>
-            <td>{{ measurement.light }}</td>
-            <td>{{ measurement.water_temperature }}</td>
-            <td>{{ measurement.mq135 }}</td>
-            <td>{{ measurement.created_at|date:"d.m.Y H:i:s" }}</td>
-        </tr>
-        {% endfor %}
-    </table>
 </div>
 
 {{ chart_labels|json_script:"chart-labels" }}
@@ -292,40 +717,81 @@
                 {
                     label: "Soil Moisture",
                     data: soilData,
+                    borderColor: "#67e8f9",
+                    backgroundColor: "rgba(103, 232, 249, 0.12)",
                     borderWidth: 2,
                     tension: 0.3
                 },
                 {
                     label: "Light",
                     data: lightData,
+                    borderColor: "#60a5fa",
+                    backgroundColor: "rgba(96, 165, 250, 0.12)",
                     borderWidth: 2,
                     tension: 0.3
                 },
                 {
                     label: "Temperature",
                     data: temperatureData,
+                    borderColor: "#f59e0b",
+                    backgroundColor: "rgba(245, 158, 11, 0.12)",
                     borderWidth: 2,
                     tension: 0.3
                 },
                 {
                     label: "Humidity",
                     data: humidityData,
+                    borderColor: "#4ade80",
+                    backgroundColor: "rgba(74, 222, 128, 0.12)",
                     borderWidth: 2,
                     tension: 0.3
                 },
                 {
                     label: "Water Temperature",
                     data: waterTempData,
+                    borderColor: "#c084fc",
+                    backgroundColor: "rgba(192, 132, 252, 0.12)",
                     borderWidth: 2,
                     tension: 0.3
                 },
                 {
                     label: "MQ135",
                     data: mq135Data,
+                    borderColor: "#f87171",
+                    backgroundColor: "rgba(248, 113, 113, 0.12)",
                     borderWidth: 2,
                     tension: 0.3
                 }
             ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    labels: {
+                        color: "#dce8f7"
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: {
+                        color: "#9fb0c8"
+                    },
+                    grid: {
+                        color: "rgba(255,255,255,0.06)"
+                    }
+                },
+                y: {
+                    ticks: {
+                        color: "#9fb0c8"
+                    },
+                    grid: {
+                        color: "rgba(255,255,255,0.06)"
+                    }
+                }
+            }
         }
     });
 

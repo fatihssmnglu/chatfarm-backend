@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ChatFarm Asistan</title>
+  <style>
+    :root {
+      --bg: #07111f;
+      --panel: rgba(10, 20, 38, 0.72);
+      --panel-strong: rgba(8, 16, 30, 0.88);
+      --stroke: rgba(255,255,255,0.10);
+      --muted: #9fb0c8;
+      --text: #edf4ff;
+      --green: #22c55e;
+      --cyan: #22d3ee;
+      --blue: #3b82f6;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --shadow: 0 20px 60px rgba(0,0,0,0.35);
+      --radius-xl: 28px;
+      --radius-lg: 22px;
+      --radius-md: 18px;
+      --radius-sm: 14px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 10% 10%, rgba(34,211,238,0.18), transparent 28%),
+        radial-gradient(circle at 85% 15%, rgba(59,130,246,0.18), transparent 26%),
+        radial-gradient(circle at 50% 100%, rgba(34,197,94,0.12), transparent 24%),
+        linear-gradient(180deg, #07111f 0%, #091424 45%, #08101d 100%);
+    }
+
+    .shell {
+      max-width: 1380px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 18px;
+      padding: 24px;
+      border: 1px solid var(--stroke);
+      border-radius: 32px;
+      background: linear-gradient(135deg, rgba(14,26,47,0.92), rgba(7,17,31,0.82));
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(20px);
+      margin-bottom: 20px;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: auto -100px -120px auto;
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(34,211,238,0.18), transparent 65%);
+      pointer-events: none;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(255,255,255,0.06);
+      color: #b9c9df;
+      font-size: 12px;
+      border: 1px solid rgba(255,255,255,0.10);
+      margin-bottom: 14px;
+    }
+
+    .title {
+      margin: 0;
+      font-size: clamp(28px, 4vw, 42px);
+      line-height: 1.05;
+      letter-spacing: -0.03em;
+    }
+
+    .subtitle {
+      margin: 14px 0 0;
+      max-width: 720px;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.65;
+    }
+
+    .hero-stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .stat {
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .stat-label {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+
+    .stat-value {
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .hero-panel {
+      display: grid;
+      align-content: stretch;
+      gap: 14px;
+    }
+
+    .health-card {
+      height: 100%;
+      min-height: 240px;
+      padding: 20px;
+      border-radius: 24px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.06), rgba(255,255,255,0.03));
+      border: 1px solid rgba(255,255,255,0.10);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .health-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .health-title {
+      font-size: 14px;
+      color: var(--muted);
+    }
+
+    .health-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      border-radius: 999px;
+      font-size: 13px;
+      font-weight: 700;
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.06);
+    }
+
+    .health-ring-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 0 4px;
+    }
+
+    .health-ring {
+      width: 170px;
+      height: 170px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: conic-gradient(var(--green) 0deg 240deg, rgba(255,255,255,0.08) 240deg 360deg);
+      position: relative;
+      box-shadow: inset 0 0 28px rgba(0,0,0,0.25);
+    }
+
+    .health-ring::after {
+      content: "";
+      position: absolute;
+      inset: 14px;
+      border-radius: 50%;
+      background: #08111f;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .health-ring-content {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+    }
+
+    .health-score {
+      font-size: 34px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .health-caption {
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 1.55fr 1fr;
+      gap: 20px;
+    }
+
+    .card {
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--stroke);
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(18px);
+    }
+
+    .chat-card {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      min-height: 760px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+
+    .section-title {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .section-desc {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 4px;
+    }
+
+    .quick-prompts {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .prompt-chip {
+      border: 1px solid rgba(255,255,255,0.10);
+      background: rgba(255,255,255,0.04);
+      color: #d9e7f7;
+      padding: 10px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: 0.18s ease;
+    }
+
+    .prompt-chip:hover {
+      transform: translateY(-1px);
+      background: rgba(255,255,255,0.08);
+    }
+
+    .messages {
+      flex: 1;
+      overflow: auto;
+      padding-right: 8px;
+    }
+
+    .messages::-webkit-scrollbar { width: 10px; }
+
+    .messages::-webkit-scrollbar-thumb {
+      background: rgba(255,255,255,0.12);
+      border-radius: 999px;
+    }
+
+    .message-row {
+      display: flex;
+      margin-bottom: 16px;
+    }
+
+    .message-row.user { justify-content: flex-end; }
+    .message-row.bot { justify-content: flex-start; }
+
+    .message {
+      max-width: min(84%, 720px);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .message-label {
+      font-size: 12px;
+      color: #8fa2bb;
+      padding: 0 4px;
+    }
+
+    .bubble {
+      padding: 16px 18px;
+      border-radius: 22px;
+      line-height: 1.65;
+      border: 1px solid rgba(255,255,255,0.10);
+      white-space: pre-wrap;
+      word-break: break-word;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.20);
+    }
+
+    .bot .bubble {
+      background: linear-gradient(180deg, rgba(24,37,60,0.95), rgba(13,23,40,0.95));
+      border-bottom-left-radius: 8px;
+    }
+
+    .user .bubble {
+      color: #07111f;
+      background: linear-gradient(135deg, #67e8f9 0%, #60a5fa 50%, #4ade80 100%);
+      border-bottom-right-radius: 8px;
+      font-weight: 600;
+    }
+
+    .typing {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 16px;
+      border-radius: 18px;
+      margin: 4px 0 14px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      color: #c7d6e9;
+      font-size: 14px;
+    }
+
+    .typing-dots {
+      display: inline-flex;
+      gap: 6px;
+    }
+
+    .typing-dots span {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #8fdcf3;
+      animation: blink 1s infinite ease-in-out;
+    }
+
+    .typing-dots span:nth-child(2) { animation-delay: 0.15s; }
+    .typing-dots span:nth-child(3) { animation-delay: 0.3s; }
+
+    @keyframes blink {
+      0%, 80%, 100% {
+        opacity: 0.3;
+        transform: translateY(0);
+      }
+      40% {
+        opacity: 1;
+        transform: translateY(-3px);
+      }
+    }
+
+    .composer {
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      display: grid;
+      gap: 12px;
+    }
+
+    .composer-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .composer input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-size: 15px;
+      padding: 8px 10px;
+    }
+
+    .composer input::placeholder { color: #89a0bb; }
+
+    .send-btn {
+      border: none;
+      border-radius: 16px;
+      padding: 14px 18px;
+      font-weight: 800;
+      cursor: pointer;
+      color: #06101c;
+      background: linear-gradient(135deg, #67e8f9, #60a5fa 55%, #4ade80);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, opacity 0.18s ease;
+      box-shadow: 0 12px 24px rgba(34,211,238,0.18);
+    }
+
+    .send-btn:hover { transform: translateY(-1px); }
+    .send-btn:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .side-card {
+      padding: 20px;
+      display: grid;
+      gap: 16px;
+      align-content: start;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .metric {
+      padding: 16px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .metric-label {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+
+    .metric-value {
+      font-size: 24px;
+      font-weight: 800;
+      line-height: 1.1;
+    }
+
+    .metric-unit {
+      font-size: 12px;
+      color: #85a2bf;
+      margin-top: 4px;
+    }
+
+    .panel {
+      padding: 18px;
+      border-radius: 22px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .panel h3 {
+      margin: 0 0 14px;
+      font-size: 15px;
+    }
+
+    .status-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 9px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.10);
+      font-size: 12px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .pill.ok { color: #aff6c6; background: rgba(34,197,94,0.14); }
+    .pill.warning { color: #fde68a; background: rgba(245,158,11,0.14); }
+    .pill.alert { color: #fecaca; background: rgba(239,68,68,0.14); }
+    .pill.neutral { color: #d3dfef; background: rgba(148,163,184,0.12); }
+
+    .panel-text {
+      color: #dce8f7;
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .list {
+      display: grid;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .list-item {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      padding: 12px 14px;
+      border-radius: 16px;
+      background: rgba(8,16,30,0.55);
+      border: 1px solid rgba(255,255,255,0.07);
+      color: #dce8f7;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .list-item::before {
+      content: "•";
+      color: #67e8f9;
+      font-size: 20px;
+      line-height: 1;
+      margin-top: -1px;
+    }
+
+    .sources {
+      display: grid;
+      gap: 10px;
+    }
+
+    .source-item {
+      padding: 14px;
+      border-radius: 18px;
+      background: linear-gradient(180deg, rgba(255,255,255,0.045), rgba(255,255,255,0.025));
+      border: 1px solid rgba(255,255,255,0.08);
+      color: #d8e5f4;
+      font-size: 13px;
+      line-height: 1.6;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 6;
+    }
+
+    .source-item strong {
+      display: block;
+      color: #9ee8f7;
+      margin-bottom: 6px;
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 1080px) {
+      .hero, .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .chat-card {
+        min-height: 680px;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .shell { padding: 14px; }
+      .hero, .card { border-radius: 24px; }
+      .hero-stats, .grid-2 { grid-template-columns: 1fr; }
+      .message { max-width: 92%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="hero">
+      <div>
+        <div class="eyebrow">Akıllı sera karar destek ekranı</div>
+        <h1 class="title">ChatFarm Asistan</h1>
+        <p class="subtitle">
+          Sensör verisi, kural motoru, semantik RAG ve LLM çıktısını tek ekranda toplayan modern,
+          daha okunabilir ve jüri sunumuna da yakışacak bir arayüz.
+        </p>
+
+        <div class="hero-stats">
+          <div class="stat">
+            <div class="stat-label">Çalışma Modu</div>
+            <div class="stat-value">Canlı Analiz</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Karar Mekanizması</div>
+            <div class="stat-value">Rule + RAG</div>
+          </div>
+          <div class="stat">
+            <div class="stat-label">Arayüz Hedefi</div>
+            <div class="stat-value">Net ve Güçlü</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hero-panel">
+        <div class="health-card">
+          <div class="health-top">
+            <div>
+              <div class="health-title">Sera Sağlık Skoru</div>
+            </div>
+            <div id="heroStatusBadge" class="health-badge">Normal</div>
+          </div>
+
+          <div class="health-ring-wrap">
+            <div id="healthRing" class="health-ring">
+              <div class="health-ring-content">
+                <div id="healthScore" class="health-score">78</div>
+                <div class="health-caption">/ 100</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel-text" id="heroInsight">
+            Sensör verileri genel olarak stabil. Kritik seviyede bir sorun görünmüyor.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <main class="layout">
+      <section class="card chat-card">
+        <div class="section-head">
+          <div>
+            <h2 class="section-title">Asistan Sohbeti</h2>
+            <div class="section-desc">Anlık soru sor, sebebi öğren, öneriyi incele.</div>
+          </div>
+        </div>
+
+        <div class="quick-prompts">
+          <button class="prompt-chip" type="button" data-prompt="Şu an genel durum nasıl?">Genel durum</button>
+          <button class="prompt-chip" type="button" data-prompt="Neden havalandırma önerildi?">Havalandırma nedeni</button>
+          <button class="prompt-chip" type="button" data-prompt="Toprak nemim düşükse ne yapmalıyım?">Toprak nemi önerisi</button>
+          <button class="prompt-chip" type="button" data-prompt="Bu veriler riskli mi?">Risk analizi</button>
+        </div>
+
+        <div id="messages" class="messages">
+          <div class="message-row bot">
+            <div class="message">
+              <div class="message-label">Asistan</div>
+              <div class="bubble">Merhaba, ben ChatFarm asistanı.
+
+Sensör verisini analiz eder, eşleşen kuralları yorumlar ve bilgi tabanından destekleyici açıklama üretirim.
+
+Sorabileceğin örnekler:
+• Şu an durum nasıl?
+• Neden havalandırma önerildi?
+• Toprak nemi düşükse ne yapmalıyım?</div>
+            </div>
+          </div>
+        </div>
+
+        <div id="typing" class="typing">
+          <span>Yanıt hazırlanıyor</span>
+          <span class="typing-dots"><span></span><span></span><span></span></span>
+        </div>
+
+        <form id="chatForm" class="composer" autocomplete="off">
+          <div class="composer-box">
+            <input type="text" id="messageInput" placeholder="Mesajınızı yazın..." />
+            <button id="sendButton" class="send-btn" type="submit">Gönder</button>
+          </div>
+        </form>
+      </section>
+
+      <aside class="card side-card">
+        <div>
+          <h2 class="section-title">Canlı Durum Paneli</h2>
+          <div class="section-desc">Sensör, analiz ve RAG özetini aynı anda izle.</div>
+        </div>
+
+        <div class="grid-2">
+          <div class="metric">
+            <div class="metric-label">Sıcaklık</div>
+            <div class="metric-value" id="temperature">-</div>
+            <div class="metric-unit">°C</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Nem</div>
+            <div class="metric-value" id="humidity">-</div>
+            <div class="metric-unit">%</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Toprak Nemi</div>
+            <div class="metric-value" id="soil_moisture">-</div>
+            <div class="metric-unit">%</div>
+          </div>
+          <div class="metric">
+            <div class="metric-label">Işık</div>
+            <div class="metric-value" id="light">-</div>
+            <div class="metric-unit">lux</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="status-row">
+            <h3>Analiz Özeti</h3>
+            <span id="statusBadge" class="pill neutral">-</span>
+          </div>
+          <div class="panel-text"><strong>Durum:</strong> <span id="statusText">-</span></div>
+          <div class="panel-text" style="margin-top:10px;"><strong>Mesaj:</strong> <span id="analysisMessage">-</span></div>
+          <div class="list" id="actionsList">
+            <div class="list-item">Henüz öneri üretilmedi.</div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>RAG Özeti</h3>
+          <div class="panel-text"><strong>Konu:</strong> <span id="ragTopic">-</span></div>
+          <div class="panel-text" style="margin-top:10px;"><strong>Kapsam Uygun mu:</strong> <span id="ragCoverage">-</span></div>
+          <div class="sources" id="sourcesContainer" style="margin-top:14px;"></div>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <script>
+    const messagesEl = document.getElementById("messages");
+    const inputEl = document.getElementById("messageInput");
+    const sendButtonEl = document.getElementById("sendButton");
+    const typingEl = document.getElementById("typing");
+    const chatFormEl = document.getElementById("chatForm");
+
+    let chatHistory = [];
+
+    function addMessage(text, sender) {
+      const row = document.createElement("div");
+      row.className = `message-row ${sender}`;
+
+      const messageWrap = document.createElement("div");
+      messageWrap.className = "message";
+
+      const label = document.createElement("div");
+      label.className = "message-label";
+      label.textContent = sender === "user" ? "Siz" : "Asistan";
+
+      const bubble = document.createElement("div");
+      bubble.className = "bubble";
+      bubble.textContent = text;
+
+      messageWrap.appendChild(label);
+      messageWrap.appendChild(bubble);
+      row.appendChild(messageWrap);
+      messagesEl.appendChild(row);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+
+    function setStatusBadge(el, status) {
+      el.textContent = status || "-";
+      el.className = "pill neutral";
+
+      if (status === "ok") {
+        el.className = "pill ok";
+      } else if (status === "warning") {
+        el.className = "pill warning";
+      } else if (status === "alert") {
+        el.className = "pill alert";
+      }
+    }
+
+    function setHeroStatus(status, message) {
+      const heroBadge = document.getElementById("heroStatusBadge");
+      const heroInsight = document.getElementById("heroInsight");
+      const scoreEl = document.getElementById("healthScore");
+      const ringEl = document.getElementById("healthRing");
+
+      let score = 78;
+      let color = "var(--green)";
+      let badgeText = "Normal";
+
+      if (status === "warning") {
+        score = 56;
+        color = "var(--amber)";
+        badgeText = "Dikkat";
+      } else if (status === "alert") {
+        score = 28;
+        color = "var(--red)";
+        badgeText = "Kritik";
+      } else if (status === "ok") {
+        score = 84;
+        color = "var(--green)";
+        badgeText = "Sağlıklı";
+      }
+
+      scoreEl.textContent = score;
+      heroBadge.textContent = badgeText;
+      heroBadge.style.color = "#eef6ff";
+      heroBadge.style.background = "rgba(255,255,255,0.08)";
+      ringEl.style.background = `conic-gradient(${color} 0deg ${Math.round(score * 3.6)}deg, rgba(255,255,255,0.08) ${Math.round(score * 3.6)}deg 360deg)`;
+      heroInsight.textContent = message || "Analiz özeti henüz oluşmadı.";
+    }
+
+    function renderActions(actions) {
+      const actionsList = document.getElementById("actionsList");
+      actionsList.innerHTML = "";
+
+      if (!actions || !actions.length) {
+        actionsList.innerHTML = '<div class="list-item">Henüz öneri üretilmedi.</div>';
+        return;
+      }
+
+      actions.forEach(action => {
+        const item = document.createElement("div");
+        item.className = "list-item";
+        item.textContent = action;
+        actionsList.appendChild(item);
+      });
+    }
+
+    function setLiveData(data) {
+      const sensor = data.sensor_data || {};
+      const analysis = data.analysis || {};
+      const rag = data.rag || {};
+
+      document.getElementById("temperature").textContent = sensor.temperature ?? "-";
+      document.getElementById("humidity").textContent = sensor.humidity ?? "-";
+      document.getElementById("soil_moisture").textContent = sensor.soil_moisture ?? "-";
+      document.getElementById("light").textContent = sensor.light ?? "-";
+
+      const status = analysis.status || "-";
+      document.getElementById("statusText").textContent = status;
+      document.getElementById("analysisMessage").textContent = analysis.message || "-";
+      setStatusBadge(document.getElementById("statusBadge"), status);
+      setHeroStatus(status, analysis.message);
+      renderActions(analysis.actions || []);
+
+      document.getElementById("ragTopic").textContent = rag.topic ?? "-";
+      document.getElementById("ragCoverage").textContent =
+        rag.coverage_ok === true ? "Evet" :
+        rag.coverage_ok === false ? "Hayır" : "-";
+
+      const sourcesContainer = document.getElementById("sourcesContainer");
+      sourcesContainer.innerHTML = "";
+
+      const chunks = rag.chunks || [];
+      if (!chunks.length) {
+        const empty = document.createElement("div");
+        empty.className = "source-item";
+        empty.innerHTML = "<strong>Kaynak yok</strong>Henüz RAG parçası gösterilmiyor.";
+        sourcesContainer.appendChild(empty);
+      } else {
+        chunks.slice(0, 3).forEach((chunk, index) => {
+          const div = document.createElement("div");
+          div.className = "source-item";
+          div.innerHTML = `<strong>Kaynak ${index + 1}</strong>${chunk.content || "İçerik yok."}`;
+          div.title = chunk.content || "";
+          sourcesContainer.appendChild(div);
+        });
+      }
+    }
+
+    async function sendMessage() {
+      const message = inputEl.value.trim();
+      if (!message) return;
+
+      chatHistory.push({
+        role: "user",
+        content: message
+      });
+
+      addMessage(message, "user");
+      inputEl.value = "";
+      sendButtonEl.disabled = true;
+      typingEl.style.display = "flex";
+
+      try {
+        const response = await fetch("/api/chat/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            message: message,
+            history: chatHistory
+          })
+        });
+
+        const data = await response.json();
+
+        chatHistory.push({
+          role: "assistant",
+          content: data.answer || "Cevap alınamadı."
+        });
+
+        addMessage(data.answer || "Cevap alınamadı.", "bot");
+        setLiveData(data);
+      } catch (error) {
+        addMessage("Bir hata oluştu. Lütfen tekrar deneyin.", "bot");
+        console.error(error);
+      } finally {
+        typingEl.style.display = "none";
+        sendButtonEl.disabled = false;
+        inputEl.focus();
+      }
+    }
+
+    document.querySelectorAll(".prompt-chip").forEach(btn => {
+      btn.addEventListener("click", () => {
+        inputEl.value = btn.dataset.prompt || "";
+        inputEl.focus();
+      });
+    });
+
+    chatFormEl.addEventListener("submit", function(event) {
+      event.preventDefault();
+      sendMessage();
+    });
+
+    window.addEventListener("load", function() {
+      inputEl.focus();
+    });
+  </script>
+</body>
+</html>

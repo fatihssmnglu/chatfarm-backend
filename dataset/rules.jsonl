@@ -1,0 +1,42 @@
+{"id":"RULE_014","crop":"domates","condition":"low_light","effect":"meyve dökülmesi","action":"ışık artırılmalı"}
+{"id":"RULE_015","crop":"domates","condition":"no_soil_analysis","effect":"yanlış gübreleme riski","action":"toprak analizi yapılmalı"}
+{"id":"RULE_016","crop":"domates","condition":"high_day_night_diff","effect":"bitki stres yaşayabilir","action":"sera dengelenmeli"}
+{"id":"RULE_017","crop":"domates","condition":"ph < 6 OR ph > 6.5","effect":"besin alımı azalır","action":"pH dengelenmeli"}
+{"id":"RULE_018","crop":"domates","condition":"water_deficit","effect":"büyüme azalır ve kalsiyum alımı düşer","action":"sulama artırılmalı"}
+{"id":"RULE_019","crop":"domates","condition":"over_irrigation","effect":"kök çürümesi ve meyve bozukluğu","action":"sulama azaltılmalı"}
+{"id":"RULE_020","crop":"domates","condition":"high_salinity","effect":"verim düşer ve potasyum alımı azalır","action":"potasyum ve nitrat artırılmalı"}
+{"id":"RULE_021","crop":"domates","condition":"low_calcium","effect":"çiçek burnu çürüklüğü (BER)","action":"kalsiyum artırılmalı"}
+{"id":"RULE_022","crop":"domates","condition":"late_irrigation","effect":"meyve çürümesi ve kalite kaybı","action":"hasat öncesi sulama azaltılmalı"}
+{"id":"RULE_023","crop":"domates","condition":"temperature <= 10","effect":"çimlenme gecikir ve gelişim baskılanır","action":"sıcaklık artırılmalı"}
+{"id":"RULE_024","crop":"domates","condition":"temperature > 35","effect":"meyve tutumu azalır","action":"havalandırma yapılmalı"}
+{"id":"RULE_025","crop":"domates","condition":"low_light","effect":"çiçeklenme durur ve verim düşer","action":"ışık artırılmalı"}
+{"id":"RULE_026","crop":"domates","condition":"humidity < 50","effect":"su kaybı ve fizyolojik zarar","action":"nem artırılmalı"}
+{"id":"RULE_027","crop":"domates","condition":"humidity > 60","effect":"hastalık riski artar","action":"havalandırma yapılmalı"}
+{"id":"RULE_028","crop":"domates","condition":"co2 < 300","effect":"fotosentez yavaşlar","action":"CO2 artırılmalı"}
+{"id":"RULE_029","crop":"domates","condition":"co2 > 10000","effect":"bitki ölümü","action":"CO2 düşürülmeli"}
+{"id":"RULE_030","crop":"domates","condition":"low_airflow","effect":"hastalık riski artar","action":"hava sirkülasyonu artırılmalı"}
+{"id":"RULE_031","crop":"domates","condition":"night_temp <= 5","effect":"polen çimlenmesi düşer","action":"ısıtma artırılmalı"}
+{"id":"RULE_032","crop":"domates","condition":"night_temp < 10","effect":"soğuk stres oluşur","action":"ısı kontrolü yapılmalı"}
+{"id":"RULE_033","crop":"domates","condition":"temp < 12","effect":"büyüme yavaşlar","action":"sıcaklık artırılmalı"}
+{"id":"RULE_034","crop":"domates","condition":"temp > 30","effect":"meyve tutumu düşer","action":"soğutma yapılmalı"}
+{"id":"RULE_035","crop":"domates","condition":"humidity > 90","effect":"fungal hastalık riski","action":"havalandırma yapılmalı"}
+{"id":"RULE_036","crop":"domates","condition":"vpd < 0.3","effect":"transpirasyon durur","action":"nem azaltılmalı"}
+{"id":"RULE_037","crop":"domates","condition":"vpd > 1.5","effect":"bitki strese girer","action":"nem artırılmalı"}
+{"id":"RULE_038","crop":"domates","condition":"low_light AND high_humidity","effect":"transpirasyon düşer ve verim azalır","action":"ışık artırılmalı ve nem düşürülmeli"}
+{"id":"RULE_039","crop":"domates","condition":"vpd < 0.5","effect":"bitki su alımı azalır","action":"nem azaltılmalı"}
+{"id":"RULE_040","crop":"domates","condition":"vpd > 1.2","effect":"aşırı su kaybı","action":"nem artırılmalı"}
+{"id":"RULE_041","crop":"domates","condition":"low_airflow","effect":"transpirasyon düşer","action":"fan açılmalı"}
+{"id":"RULE_042","crop":"domates","condition":"high_humidity","effect":"stomata kapanır ve gelişim yavaşlar","action":"nem düşürülmeli"}
+{"id":"RULE_043","crop":"domates","condition":"low_humidity","effect":"su stresi","action":"nem artırılmalı"}
+{"id":"RULE_044","crop":"domates","condition":"temperature < -2","effect":"bitki zarar görür","action":"ısıtma yapılmalı"}
+{"id":"RULE_045","crop":"domates","condition":"temperature < 14","effect":"olgunlaşma gecikir ve verim düşer","action":"sıcaklık artırılmalı"}
+{"id":"RULE_046","crop":"domates","condition":"temperature < 11","effect":"döllenme problemi","action":"sıcaklık artırılmalı"}
+{"id":"RULE_047","crop":"domates","condition":"temperature > 35","effect":"meyve tutumu bozulur","action":"havalandırma yapılmalı"}
+{"id":"RULE_048","crop":"domates","condition":"low_light","effect":"bitki zayıf gelişir","action":"ışık artırılmalı"}
+{"id":"RULE_049","crop":"domates","condition":"over_irrigation","effect":"bitki zarar görür","action":"sulama azaltılmalı"}
+{"id":"RULE_050","crop":"domates","condition":"irregular_watering","effect":"çiçek burnu çürüklüğü ve meyve çatlaması","action":"düzenli sulama yapılmalı"}
+{"id":"RULE_051","crop":"domates","condition":"high_humidity > 90","effect":"hastalık riski artar ve transpirasyon azalır","action":"havalandırma yapılmalı"}
+{"id":"RULE_052","crop":"domates","condition":"low_airflow","effect":"nem birikir ve hastalık oluşur","action":"fan veya havalandırma artırılmalı"}
+{"id":"RULE_053","crop":"domates","condition":"overcrowding","effect":"hava sirkülasyonu azalır ve hastalık artar","action":"bitkiler arası mesafe artırılmalı"}
+{"id":"RULE_054","crop":"domates","condition":"temp < 55F OR temp > 95F","effect":"çiçek dökülmesi","action":"sıcaklık kontrol edilmeli"}
+{"id":"RULE_055","crop":"domates","condition":"excess_sunlight","effect":"bitki zarar görür","action":"gölgeleme yapılmalı"}

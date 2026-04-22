@@ -1,9 +1,8 @@
 from django.contrib import admin
-from django.urls import path
 from django.http import HttpResponse
 from django.shortcuts import redirect
+from django.urls import include, path
 from telemetry.views import dashboard
-
 from telemetry.api.views import TelemetryAPIView
 
 
@@ -24,4 +23,5 @@ urlpatterns = [
     path("favicon.ico", favicon),
     path("", root),
     path("dashboard/", dashboard),
+    path("api/", include("knowledge.urls")),
 ]

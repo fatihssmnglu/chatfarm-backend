@@ -1,0 +1,37 @@
+{"id":"RULE_001","crop":"domates","condition":"temperature < -2","effect":"bitki zarar görür","action":"ısıtma yapılmalı"}
+{"id":"RULE_002","crop":"domates","condition":"temperature <= 10","effect":"çimlenme gecikir ve gelişim baskılanır","action":"sıcaklık artırılmalı"}
+{"id":"RULE_003","crop":"domates","condition":"temperature < 11","effect":"döllenme problemi oluşur","action":"sıcaklık artırılmalı"}
+{"id":"RULE_004","crop":"domates","condition":"temperature < 14","effect":"olgunlaşma gecikir ve verim düşer","action":"sıcaklık artırılmalı"}
+{"id":"RULE_005","crop":"domates","condition":"temperature > 35","effect":"meyve tutumu bozulur","action":"havalandırma yapılmalı"}
+
+{"id":"RULE_006","crop":"domates","condition":"night_temp <= 5","effect":"polen çimlenmesi ciddi şekilde düşer","action":"ısıtma artırılmalı"}
+{"id":"RULE_007","crop":"domates","condition":"night_temp < 10","effect":"soğuk stres oluşur","action":"gece sıcaklığı yükseltilmeli"}
+
+{"id":"RULE_008","crop":"domates","condition":"humidity < 50","effect":"su kaybı ve fizyolojik zarar oluşur","action":"nem artırılmalı"}
+{"id":"RULE_009","crop":"domates","condition":"humidity > 90","effect":"fungal hastalık riski artar","action":"havalandırma yapılmalı"}
+
+{"id":"RULE_010","crop":"domates","condition":"low_light","effect":"bitki zayıf gelişir, çiçeklenme ve verim azalır","action":"ışık artırılmalı"}
+{"id":"RULE_011","crop":"domates","condition":"excess_sunlight","effect":"bitki zarar görebilir","action":"gölgeleme yapılmalı"}
+
+{"id":"RULE_012","crop":"domates","condition":"vpd < 0.3","effect":"transpirasyon durur veya ciddi azalır","action":"nem azaltılmalı"}
+{"id":"RULE_013","crop":"domates","condition":"vpd < 0.5","effect":"bitki su alımı azalır","action":"nem azaltılmalı"}
+{"id":"RULE_014","crop":"domates","condition":"vpd > 1.2","effect":"aşırı su kaybı başlar","action":"nem artırılmalı"}
+{"id":"RULE_015","crop":"domates","condition":"vpd > 1.5","effect":"bitki strese girer","action":"nem artırılmalı"}
+
+{"id":"RULE_016","crop":"domates","condition":"water_deficit","effect":"büyüme azalır ve su stresi oluşur","action":"sulama artırılmalı"}
+{"id":"RULE_017","crop":"domates","condition":"over_irrigation","effect":"kök çürümesi ve meyve bozukluğu riski oluşur","action":"sulama azaltılmalı"}
+{"id":"RULE_018","crop":"domates","condition":"irregular_watering","effect":"çiçek burnu çürüklüğü ve meyve çatlaması görülebilir","action":"düzenli sulama yapılmalı"}
+{"id":"RULE_019","crop":"domates","condition":"late_irrigation","effect":"meyve çürümesi ve kalite kaybı olabilir","action":"hasat öncesi sulama azaltılmalı"}
+
+{"id":"RULE_020","crop":"domates","condition":"low_airflow","effect":"nem birikir, transpirasyon düşer ve hastalık riski artar","action":"fan veya havalandırma artırılmalı"}
+{"id":"RULE_021","crop":"domates","condition":"overcrowding","effect":"hava sirkülasyonu azalır ve hastalık riski artar","action":"bitkiler arası mesafe artırılmalı"}
+
+{"id":"RULE_022","crop":"domates","condition":"ph < 6 OR ph > 6.5","effect":"besin alımı azalır","action":"pH dengelenmeli"}
+{"id":"RULE_023","crop":"domates","condition":"high_salinity","effect":"verim düşer ve potasyum alımı azalır","action":"potasyum ve nitrat artırılmalı"}
+{"id":"RULE_024","crop":"domates","condition":"low_calcium","effect":"çiçek burnu çürüklüğü (BER) oluşur","action":"kalsiyum artırılmalı"}
+{"id":"RULE_025","crop":"domates","condition":"co2 < 300","effect":"fotosentez yavaşlar","action":"CO2 artırılmalı"}
+{"id":"RULE_026","crop":"domates","condition":"co2 > 10000","effect":"bitki ölümü riski oluşur","action":"CO2 düşürülmeli"}
+
+{"id":"RULE_027","crop":"domates","condition":"low_light AND high_humidity","effect":"transpirasyon düşer ve verim azalır","action":"ışık artırılmalı ve nem düşürülmeli"}
+{"id":"RULE_028","crop":"domates","condition":"high_day_night_diff","effect":"bitki stres yaşayabilir","action":"sera dengelenmeli"}
+{"id":"RULE_029","crop":"domates","condition":"no_soil_analysis","effect":"yanlış gübreleme riski oluşur","action":"toprak analizi yapılmalı"}

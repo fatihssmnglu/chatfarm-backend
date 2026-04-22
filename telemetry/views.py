@@ -3,6 +3,7 @@ from telemetry.models import Measurement, Alert, IrrigationRecommendation
 from devices.models import Device
 from django.utils import timezone
 from datetime import timedelta
+from knowledge.services import generate_advice
 
 
 def dashboard(request):
@@ -11,6 +12,24 @@ def dashboard(request):
 
     latest_alert = Alert.objects.order_by("-created_at").first()
     latest_recommendation = IrrigationRecommendation.objects.order_by("-created_at").first()
+
+    ai_result = None
+    ai_message = "Henüz analiz yapılmadı."
+    ai_effects = []
+    ai_actions = []
+
+    if latest_measurement:
+        sensor_data = {
+            "temperature": latest_measurement.temperature,
+            "humidity": latest_measurement.humidity,
+            "soil_moisture": latest_measurement.soil_moisture,
+            "light": latest_measurement.light,
+        }
+
+        ai_result = generate_advice(sensor_data)
+        ai_message = ai_result.get("message", "Analiz sonucu yok")
+        ai_effects = ai_result.get("effects", [])
+        ai_actions = ai_result.get("actions", [])
 
     chart_measurements = list(Measurement.objects.order_by("-created_at")[:10])
     chart_measurements.reverse()
@@ -50,7 +69,6 @@ def dashboard(request):
         for measurement in chart_measurements
     ]
 
-    # TOPRAK NEM DURUMU
     moisture_status = "Bilinmiyor"
     moisture_color = "#6c757d"
 
@@ -67,7 +85,6 @@ def dashboard(request):
             moisture_status = "İyi"
             moisture_color = "#198754"
 
-    # IŞIK DURUMU
     light_status = "Bilinmiyor"
     light_color = "#6c757d"
 
@@ -84,7 +101,6 @@ def dashboard(request):
             light_status = "Karanlık"
             light_color = "#343a40"
 
-    # CİHAZ DURUMU
     latest_device = Device.objects.order_by("-created_at").first()
     device_status = "Offline"
     device_color = "#dc3545"
@@ -117,6 +133,11 @@ def dashboard(request):
 
         "latest_alert": latest_alert,
         "latest_recommendation": latest_recommendation,
+
+        "ai_result": ai_result,
+        "ai_message": ai_message,
+        "ai_effects": ai_effects,
+        "ai_actions": ai_actions,
     }
 
     return render(request, "telemetry/dashboard.html", context)

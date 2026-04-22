@@ -4,7 +4,10 @@ __pycache__/
 *.pyo
 *.pyd
 db.sqlite3
+*.sqlite3
 .env
 .vscode/
 .idea/
 .DS_Store
+_pushrepo/
+rag_store/
